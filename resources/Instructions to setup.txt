@@ -1,0 +1,23 @@
+To start programming:
+
+* Change to 64-bit project using http://stackoverflow.com/a/4364020
+
+* Download GLFW 64-bit src & build with cmake 64-bit
+* Download GLEW 64-bit
+
+* Copy glfw/include/glfw folder to projectdir/include/
+* Copy glew/include/gl folder to projectdir/include/
+* Add include directory projectdir/include
+
+* Copy glfw/build/src/Debug/glfw?.lib to projectdir/lib/
+* Copy glew/?/x64/glfw?.lib to projectdir/lib/
+* Add library directory projectdir/lib
+
+* Add .lib file names to linker/input in vc++ projec settings (including opengl32.lib if ur on windowz)
+* Add glew dll to game.exe folder
+
+To init glfw and glew:
+
+* Init glfw
+* Create glfw window
+* Init glew

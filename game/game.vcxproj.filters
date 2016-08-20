@@ -5,31 +5,63 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    <Filter Include="lib">
+      <UniqueIdentifier>{9ce67c9d-921a-42b8-a8d6-ea0766a762cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{b52ec28b-b325-419b-ad22-0b65bee07f1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\GL">
+      <UniqueIdentifier>{9782b707-6c04-4f16-8651-1d95ad851cc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\GLFW">
+      <UniqueIdentifier>{531e835c-4bf3-4630-9b93-890e38e22f09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{ec386be4-312a-42d9-be63-260d4aff8fca}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClInclude Include="..\include\GL\eglew.h">
+      <Filter>include\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GL\glew.h">
+      <Filter>include\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GL\glxew.h">
+      <Filter>include\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GL\wglew.h">
+      <Filter>include\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GLFW\glfw3.h">
+      <Filter>include\GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GLFW\glfw3native.h">
+      <Filter>include\GLFW</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\..\..\..\Downloads\glew-2.0.0\lib\Release\x64\glew32.lib">
+      <Filter>lib</Filter>
+    </Library>
+    <Library Include="..\lib\glfw3.lib">
+      <Filter>lib</Filter>
+    </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Downloads\glfw-3.2.1.bin.WIN64\include\GLFW\glfw3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Downloads\glew-2.0.0\include\GL\glew.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <None Include="..\resources\glew32.dll">
+      <Filter>resources</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\Downloads\glew-2.0.0\bin\Release\x64\glew32.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Instructions to setup.txt" />
+    <Text Include="..\resources\Instructions to setup.txt">
+      <Filter>resources</Filter>
+    </Text>
   </ItemGroup>
 </Project>

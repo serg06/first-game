@@ -19,25 +19,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\GLFW\glfw3.h" />
-    <ClInclude Include="..\include\GLFW\glfw3native.h" />
-    <ClInclude Include="..\include\GL\eglew.h" />
-    <ClInclude Include="..\include\GL\glew.h" />
-    <ClInclude Include="..\include\GL\glxew.h" />
-    <ClInclude Include="..\include\GL\wglew.h" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="..\..\..\..\..\Downloads\glew-2.0.0\lib\Release\x64\glew32.lib" />
-    <Library Include="..\lib\glfw3.lib" />
+    <ClInclude Include="..\..\..\..\..\Downloads\glew-2.0.0\include\GL\glew.h" />
+    <ClInclude Include="..\..\..\..\..\Downloads\glfw-3.2.1.bin.WIN64\include\GLFW\glfw3.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\main.cpp" />
+    <None Include="..\..\..\..\..\Downloads\glew-2.0.0\bin\Release\x64\glew32.dll" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\resources\glew32.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\resources\Instructions to setup.txt" />
+    <Text Include="Instructions to setup.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9DFEE78D-C1BD-4CF1-A5D9-5EAC5BC6DCAC}</ProjectGuid>
@@ -94,9 +87,9 @@
     <LibraryPath>C:\Users\Serguei\Downloads\glfw-3.2.1\build\src\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Serguei\Documents\Visual Studio 2015\Projects\game\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Serguei\Documents\Visual Studio 2015\Projects\game\lib;$(LibraryPath)</LibraryPath>
-    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\Users\Serguei\Downloads\glew-2.0.0\include;C:\Users\Serguei\Downloads\glfw-3.2.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Serguei\Downloads\glew-2.0.0\lib\Release\x64;C:\Users\Serguei\Downloads\glfw-3.2.1\build\src\Debug;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>C:\Users\Serguei\Downloads\glew-2.0.0\bin\Release\x64;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -116,7 +109,7 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
