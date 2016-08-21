@@ -21,3 +21,6 @@ To init glfw and glew:
 * Init glfw
 * Create glfw window
 * Init glew
+	* Do not fucking set glew to GLEW_STATIC because that messes up some fucking shit
+
+d

@@ -1,22 +1,41 @@
+	// Normie shit
+
 #include <iostream>
 #include <windows.h>
+#include <cstdlib>
 
 #define sec 1000
 
+	// Special shit
+
 // GLEW
-#define GLEW_STATIC
-#define STATIC_GLEW
+//#define GLEW_STATIC
 #include <GL/glew.h>
-#include <GL/GL.h>
 
 // GLFW
 #include <GLFW/glfw3.h>
 
-/* Change to 64-bit project using http://stackoverflow.com/a/4364020
- * Add include folder to project VC++ include directories
- * Add build/src/Debug folder to VC++ library directories
- * Add .lib file name to linker/input
- */
+// our vertex shader code to be compiled at runtime
+const GLchar * vertexShaderSource = "\
+#version 330 core\n\
+\n\
+layout(location = 0) in vec3 position;\n\
+\n\
+void main()\n\
+{\n\
+	gl_Position = vec4(position.x, position.y, position.z, 1.0);\n\
+}\0";
+
+// our fragment shader source code!
+const GLchar * fragmentShaderSource = "\n\
+#version 330 core\n\
+\n\
+out vec4 color;\n\
+\n\
+void main()\n\
+{\n\
+	color = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n\
+}";
 
 // stands for super print cuz fuck you
 void suprint(char * info, int secs = 0) {
@@ -91,30 +110,123 @@ GLFWwindow* initWindow() {
 	initGlfw();
 	GLFWwindow* window = createWindow();
 	initGlew();
+
 	initViewport(window); // tell openGl the size of our window
-	
-	glfwSetKeyCallback(window, key_callback);
+	glfwSetKeyCallback(window, key_callback); // assign the window our key callback function
 	glfwSwapInterval(1); // set vsync=on (good for cpu especially with that while loop damn)
 	
 	return window;
 }
 
+// run the game until quit
+void updateScreen(GLFWwindow* window) {
+	// check and call events (like key callbacks!)
+	glfwPollEvents();
+
+	// render
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	// put the rendered buffer on the screen, take the old buffer back to render the next frame
+	glfwSwapBuffers(window);
+}
+
+// NOTE: THESE COMMENTS ARE PROBABLY VERY WRONG
+GLuint createTriangleVBO() {
+	// vertex for 2d triangle in 3d space
+	GLfloat trianglev[] = {
+		-0.5f, -0.5f, 0.0f, // bottom left corner
+		0.5f,  -0.5f, 0.0f, // bottom right coner
+		0.0f,   0.5f, 0.0f  // middle top corner
+	};
+
+	// generate buffer object whose memory will be used to store our vertex buffer
+	GLuint VBO;
+	glGenBuffers(1, &VBO);
+
+	// bind our buffer object memory (VBO) to the GL_ARRAY_BUFFER
+	// any calls to GL_ARRAY_BUFFER will modify VBO, our buffer memory
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	// now we can call glBufferData to copy our vertex into the buffer's memory,
+	// telling it the amount of memory to copy from the object
+	glBufferData(GL_ARRAY_BUFFER, sizeof(trianglev), trianglev, GL_STATIC_DRAW);
+	
+	return VBO;
+}
+
+void verifyShaderCompiled(GLuint shader, bool notifyOnSuccess = false, char* shaderName = NULL) {
+	GLint success;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+	
+	if (!success)
+	{
+		GLchar infoLog[512];
+		glGetShaderInfoLog(shader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+	else if (notifyOnSuccess)
+	{
+		std::cout << "SHADER COMPILED SUCCESSFULLY";
+		if (shaderName != NULL) {
+			printf(": \"%s\"", shaderName);
+		}
+		std::cout << std::endl;
+	}
+}
+
+GLuint createShader(GLuint shaderType, const GLchar * sourceCode) {
+	// create shader
+	GLuint shader;
+	shader = glCreateShader(shaderType);
+
+	// attach the shader source code to the shader and compile it
+	glShaderSource(shader, 1, &sourceCode, NULL);
+	glCompileShader(shader);
+
+	// make sure shader compiled correctly, as IDE will not tell me on its own
+	char * shaderMessage;
+
+	switch (shaderType) {
+	case GL_VERTEX_SHADER:
+		shaderMessage = "vertex shader"; break;
+	case GL_FRAGMENT_SHADER:
+		shaderMessage = "fragment shader"; break;
+	default:
+		shaderMessage = "unknown shader"; break;
+	}
+
+	verifyShaderCompiled(shader, true, "vertex shader");
+	return shader;
+}
+
+GLuint createVertexShader() {
+	return createShader(GL_VERTEX_SHADER, vertexShaderSource);
+}
+
+GLuint createFragmentShader() {
+	return createShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
+}
+
+// create triangle
 int main() {
 	startMessage();
-	
 	GLFWwindow* window = initWindow();
-	
+
+		// VERTEX INPUT
+
+	// generate buffer object whose memory will be used to store our vertex buffer
+	GLuint VBO = createTriangleVBO();
+
+	// create two required shader
+	GLuint vertexShader = createVertexShader();
+	GLuint fragmentShader = createFragmentShader();
+
+	// TODO: Create shader program
+
 	while (!glfwWindowShouldClose(window))
 	{
-		// check and call events (like key callbacks!)
-		glfwPollEvents();
-
-		// render
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		// put the rendered buffer on the screen, take the old buffer back to render the next frame
-		glfwSwapBuffers(window);
+		updateScreen(window);
 	}
 	glfwTerminate();
 
