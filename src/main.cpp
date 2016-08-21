@@ -163,13 +163,33 @@ void verifyShaderCompiled(GLuint shader, bool notifyOnSuccess = false, char* sha
 	{
 		GLchar infoLog[512];
 		glGetShaderInfoLog(shader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
 	else if (notifyOnSuccess)
 	{
 		std::cout << "SHADER COMPILED SUCCESSFULLY";
 		if (shaderName != NULL) {
 			printf(": \"%s\"", shaderName);
+		}
+		std::cout << std::endl;
+	}
+}
+
+void verifyProgramLinked(GLuint program, bool notifyOnSuccess = false, char* programName = NULL) {
+	GLint success;
+	glGetProgramiv(program, GL_LINK_STATUS, &success);
+
+	if (!success)
+	{
+		GLchar infoLog[512];
+		glGetShaderInfoLog(program, 512, NULL, infoLog);
+		std::cout << "ERROR::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+	}
+	else if (notifyOnSuccess)
+	{
+		std::cout << "PROGRAM LINKED SUCCESSFULLY";
+		if (programName != NULL) {
+			printf(": \"%s\"", programName);
 		}
 		std::cout << std::endl;
 	}
@@ -208,21 +228,35 @@ GLuint createFragmentShader() {
 	return createShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
 }
 
+GLuint createShaderProgram(GLuint vShader, GLuint fShader) {
+	GLuint shaderProgram;
+	shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vShader);
+	glAttachShader(shaderProgram, fShader);
+	glLinkProgram(shaderProgram);
+	verifyProgramLinked(shaderProgram, true, "shader program");
+	return shaderProgram;
+}
+
 // create triangle
 int main() {
 	startMessage();
+
 	GLFWwindow* window = initWindow();
-
-		// VERTEX INPUT
-
-	// generate buffer object whose memory will be used to store our vertex buffer
 	GLuint VBO = createTriangleVBO();
-
-	// create two required shader
 	GLuint vertexShader = createVertexShader();
 	GLuint fragmentShader = createFragmentShader();
+	GLuint shaderProgram = createShaderProgram(vertexShader, fragmentShader);
 
-	// TODO: Create shader program
+	// tell openGl which shaderProgram to use
+	// every shader and rendering call after this will use this program
+	glUseProgram(shaderProgram);
+
+	// no longer need shader objects?? Supposedly because a copy is already in our program
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+
 
 	while (!glfwWindowShouldClose(window))
 	{
