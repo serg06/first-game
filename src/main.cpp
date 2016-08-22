@@ -1,4 +1,4 @@
-	// Normie shit
+// Normie shit
 
 #include <iostream>
 #include <windows.h>
@@ -6,13 +6,11 @@
 
 #define sec 1000
 
-	// Special shit
 
-// GLEW
-//#define GLEW_STATIC
+// ON TO THE FUN
+
+// #define GLEW_STATIC // THIS BREAKS STUFF HARDCORE ?? !!
 #include <GL/glew.h>
-
-// GLFW
 #include <GLFW/glfw3.h>
 
 // our vertex shader code to be compiled at runtime
@@ -42,24 +40,33 @@ void suprint(char * info, int secs = 0) {
 	std::cout << info << std::endl; Sleep(secs * 1000);
 }
 
+// bit of console logging so I know the program got here
 void startMessage() {
 	suprint("BEGIN");
 }
 
+// bit of console logging so I know the program got here
 void endMessage() {
 	suprint("FIN!");
 }
 
+// initialize glfw, a c library for easy creation of windows
 void initGlfw() {
+	// initialize glfw library
 	glfwInit();
+
+	// set properties for the window which will be used when glfwCreateWindow is called
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // set profile (core or compatability)
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // set window to not resizeable
+
 	suprint("INITIALIZED GLFW");
 }
 
+// create a window and make it our current OpenGL context
 GLFWwindow* createWindow() {
+	// create window AND ITS OWN OpenGL context
 	GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", nullptr, nullptr);
 	if (window == nullptr)
 	{
@@ -67,15 +74,22 @@ GLFWwindow* createWindow() {
 		glfwTerminate();
 		exit(-1);
 	}
+
+	// make this window's context our current context so changes to our context will be made to this window's context
 	glfwMakeContextCurrent(window);
+
 	suprint("CREATED GLFW WINDOW");
 	return window;
 }
 
-// initialize GLEW, the guys with the functions mapping to the correct shit
+// initialize glew, a library that maps simple header functions to crazy OpenGL functions/extensions/whatnot
 void initGlew() {
-	// glewExperimental = GL_TRUE; // why tf this don't work
+	glewExperimental = GL_TRUE;
+
+	// maps simple header functions to OpenGL functions which are found at runtime
 	GLenum a = glewInit();
+
+	// check succesfulness + extra logging because I was bored
 	switch (a) {
 	case GLEW_OK:
 		suprint("GLEW INITIALIZED"); break;
@@ -92,9 +106,13 @@ void initGlew() {
 
 // tell openGL the size of our window
 void initViewport(GLFWwindow* window) {
+	// get the window's dimensions
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
+	
+	// tell opengl our viewable area (window's dimensions)
 	glViewport(0, 0, width, height);
+
 	suprint("VIEWPORT INITLALIZED");
 }
 
@@ -106,53 +124,35 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 }
 
+// fully initialize our window
 GLFWwindow* initWindow() {
 	initGlfw();
 	GLFWwindow* window = createWindow();
 	initGlew();
 
-	initViewport(window); // tell openGl the size of our window
-	glfwSetKeyCallback(window, key_callback); // assign the window our key callback function
-	glfwSwapInterval(1); // set vsync=on (good for cpu especially with that while loop damn)
+	initViewport(window);
+	glfwSetKeyCallback(window, key_callback);
+	glfwSwapInterval(1); // set vsync=on (good for cpu especially with that while loop damn. Why is this not in the tutorial!)
 	
 	return window;
 }
 
-// run the game until quit
-void updateScreen(GLFWwindow* window) {
-	// check and call events (like key callbacks!)
+// update window viewable area with newest info
+void updateScreen(GLFWwindow* window, GLuint VAO) {
+	// check for events (like keys pressed!) and call callbacks appropriately
 	glfwPollEvents();
 
-	// render
+	// set color to place when color buffer is cleared & clears it
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	// draw our triangle
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindVertexArray(0);
+
 	// put the rendered buffer on the screen, take the old buffer back to render the next frame
 	glfwSwapBuffers(window);
-}
-
-// NOTE: THESE COMMENTS ARE PROBABLY VERY WRONG
-GLuint createTriangleVBO() {
-	// vertex for 2d triangle in 3d space
-	GLfloat trianglev[] = {
-		-0.5f, -0.5f, 0.0f, // bottom left corner
-		0.5f,  -0.5f, 0.0f, // bottom right coner
-		0.0f,   0.5f, 0.0f  // middle top corner
-	};
-
-	// generate buffer object whose memory will be used to store our vertex buffer
-	GLuint VBO;
-	glGenBuffers(1, &VBO);
-
-	// bind our buffer object memory (VBO) to the GL_ARRAY_BUFFER
-	// any calls to GL_ARRAY_BUFFER will modify VBO, our buffer memory
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	// now we can call glBufferData to copy our vertex into the buffer's memory,
-	// telling it the amount of memory to copy from the object
-	glBufferData(GL_ARRAY_BUFFER, sizeof(trianglev), trianglev, GL_STATIC_DRAW);
-	
-	return VBO;
 }
 
 void verifyShaderCompiled(GLuint shader, bool notifyOnSuccess = false, char* shaderName = NULL) {
@@ -238,32 +238,90 @@ GLuint createShaderProgram(GLuint vShader, GLuint fShader) {
 	return shaderProgram;
 }
 
+void createTriangleVBO(GLuint * VBO) {
+	// create our [2d in 3d] triangle vertices
+	GLfloat trianglev[] = {
+		-0.5f, -0.5f, 0.0f, // bottom left corner
+		0.5f,  -0.5f, 0.0f, // bottom right coner
+		0.0f,   0.5f, 0.0f  // middle top corner
+	};
+
+	// create a buffer object for our triangle vertices
+	glGenBuffers(1, VBO);
+
+	// bind it to the array buffer
+	glBindBuffer(GL_ARRAY_BUFFER, *VBO);
+
+	// write the triangle vertices to [the array buffer which is bound to] our VBO
+	glBufferData(GL_ARRAY_BUFFER, sizeof(trianglev), trianglev, GL_STATIC_DRAW);
+}
+
+GLuint createTriangleVAO(GLuint * VBO) {
+	// Create Vertex Array Object (data neded to draw an object)
+	GLuint VAO;
+	glGenVertexArrays(1, &VAO);
+
+	// Bind our vertex array object so that future VBO, EBO, glVertexAttribPointer or glEnableVertexAttribArray calls are stored inside of it.
+	glBindVertexArray(VAO);
+
+	createTriangleVBO(VBO);
+
+	// set the attributes for our bound VAO's 0th attribute
+	glVertexAttribPointer(
+		0, // our vertex shader has location=0, which I don't quite understand
+		3, // size of our vertex attribute, which is a vec3 (does this mean 3D or 3 vertices?)
+		GL_FLOAT, // type of vertex data
+		GL_FALSE, // bool normalized: whether to map values out of 0-1 range to 0-1
+		3 * sizeof(GLfloat), // the space between sets of vertex attributes. Let's say we had xyzcrap and we only needed to pass xyz, we'd do 7*float or w/e. 
+							 // can also be set to 0 to let openGL auto-determine it (which it can if shit is tightly-packed (a.k.a. xyzxyzxyzxy..)
+		(GLvoid*)0 // offset of where position data begins in buffer
+	);
+
+	// enable 0th vertex attribute (ok...)
+	glEnableVertexAttribArray(0);
+
+	// unbind the VBO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// unbind the VAO
+	glBindVertexArray(0);
+
+	return VAO;
+}
+
 // create triangle
 int main() {
+
 	startMessage();
 
-	GLFWwindow* window = initWindow();
-	GLuint VBO = createTriangleVBO();
-	GLuint vertexShader = createVertexShader();
-	GLuint fragmentShader = createFragmentShader();
-	GLuint shaderProgram = createShaderProgram(vertexShader, fragmentShader);
+	GLFWwindow* window = initWindow(); // create window
 
-	// tell openGl which shaderProgram to use
-	// every shader and rendering call after this will use this program
-	glUseProgram(shaderProgram);
-
-	// no longer need shader objects?? Supposedly because a copy is already in our program
+	GLuint vertexShader = createVertexShader(); // create vertex shader object
+	GLuint fragmentShader = createFragmentShader(); // create fragment shader object
+	
+	GLuint shaderProgram = createShaderProgram(vertexShader, fragmentShader); // create full shader program using those two shader objects
+	
+	//no longer need shader objects, I assume we delete them because they are on limited vram
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
+	// create both variables here so we can destroy them both at the end
+	GLuint VBO;
+	GLuint VAO = createTriangleVAO(& VBO);
 
+	// select which program to use
+	glUseProgram(shaderProgram);
 
+	// run program until close
 	while (!glfwWindowShouldClose(window))
 	{
-		updateScreen(window);
+		updateScreen(window, VAO);
 	}
+	
+	// clean resources
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
 	glfwTerminate();
-
 
 	endMessage(); return 0;
 }

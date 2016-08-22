@@ -50,11 +50,6 @@
     </Library>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\resources\glew32.dll">
       <Filter>resources</Filter>
     </None>
@@ -63,5 +58,10 @@
     <Text Include="..\resources\Instructions to setup.txt">
       <Filter>resources</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
