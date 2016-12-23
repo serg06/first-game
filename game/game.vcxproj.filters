@@ -42,10 +42,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="..\..\..\..\..\Downloads\glew-2.0.0\lib\Release\x64\glew32.lib">
+    <Library Include="..\lib\glfw3.lib">
       <Filter>lib</Filter>
     </Library>
-    <Library Include="..\lib\glfw3.lib">
+    <Library Include="..\lib\glew32.lib">
       <Filter>lib</Filter>
     </Library>
   </ItemGroup>

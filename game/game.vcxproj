@@ -27,7 +27,7 @@
     <ClInclude Include="..\include\GL\wglew.h" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="..\..\..\..\..\Downloads\glew-2.0.0\lib\Release\x64\glew32.lib" />
+    <Library Include="..\lib\glew32.lib" />
     <Library Include="..\lib\glfw3.lib" />
   </ItemGroup>
   <ItemGroup>
@@ -94,8 +94,8 @@
     <LibraryPath>C:\Users\Serguei\Downloads\glfw-3.2.1\build\src\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Serguei\Documents\Visual Studio 2015\Projects\game\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Serguei\Documents\Visual Studio 2015\Projects\game\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include;C:\Users\Serguei\Documents\Visual Studio 2015\Projects\game\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib;C:\Users\Serguei\Documents\Visual Studio 2015\Projects\game\lib;$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
