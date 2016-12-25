@@ -19,20 +19,25 @@ const GLchar * vertexShaderSource = "\
 \n\
 layout(location = 0) in vec3 position;\n\
 \n\
+out vec4 vertexColor; // color to send to fragment shader \n\
+\n\
 void main()\n\
 {\n\
-	gl_Position = vec4(position.x, position.y, position.z, 1.0);\n\
+	gl_Position = vec4(position, 1.0);\n\
+	vertexColor = vec4(0.5f, 0.0f, 0.0f, 1.0f); // dark red \n\
 }\0";
 
 // our fragment shader source code!
 const GLchar * fragmentShaderSource = "\n\
 #version 330 core\n\
 \n\
+in vec4 vertexColor;\n\
+\n\
 out vec4 color;\n\
 \n\
 void main()\n\
 {\n\
-	color = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n\
+	color = vertexColor;\n\
 }";
 
 // stands for super print cuz fuck you
@@ -113,7 +118,7 @@ void initViewport(GLFWwindow* window) {
 	// tell opengl our viewable area (window's dimensions)
 	glViewport(0, 0, width, height);
 
-	suprint("VIEWPORT INITLALIZED");
+	suprint("VIEWPORT INITIALIZED");
 }
 
 // watch for key press and act accordingly
@@ -293,7 +298,6 @@ GLuint createTriangleVAO(GLuint * VBO) {
 */
 
 
-// create triangle
 int main() {
 
 	startMessage();
@@ -339,9 +343,9 @@ int main() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(trianglesi), trianglesi, GL_STATIC_DRAW);
 
-	// set the attributes for our bound VAO's 0th attribute
+	// set the attributes for our bound VAO's 0th attribute - location!
 	glVertexAttribPointer(
-		0, // our vertex shader has location=0, which I don't quite understand
+		0, // 0th attribute 
 		3, // size of our vertex attribute, which is a vec3 (does this mean 3D or 3 vertices?)
 		GL_FLOAT, // type of vertex data
 		GL_FALSE, // bool normalized: whether to map values out of 0-1 range to 0-1
@@ -350,7 +354,7 @@ int main() {
 		(GLvoid*)0 // offset of where position data begins in buffer
 	);
 
-	// enable 0th vertex attribute (ok...)
+	// enable 0th attribute, a.k.a. location vertex
 	glEnableVertexAttribArray(0);
 
 	// unbind various objects from buffers (NOTE: must unbind EBO AFTER VAO, else it will unbind from the VAO)
