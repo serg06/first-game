@@ -4,52 +4,13 @@
 #include <windows.h>
 #include <cstdlib>
 
-#define sec 1000
+// #define GLEW_STATIC // This breaks stuff...
 
-
-// ON TO THE FUN
-
-// #define GLEW_STATIC // THIS BREAKS STUFF HARDCORE ?? !!
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-// our vertex shader code to be compiled at runtime
-const GLchar * vertexShaderSource = "\
-#version 330 core\n\
-\n\
-layout(location = 0) in vec3 position;\n\
-\n\
-void main()\n\
-{\n\
-	gl_Position = vec4(position.x, position.y, position.z, 1.0);\n\
-}\0";
-
-// our fragment shader source code!
-const GLchar * fragmentShaderSource = "\n\
-#version 330 core\n\
-\n\
-out vec4 color;\n\
-\n\
-void main()\n\
-{\n\
-	color = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n\
-}";
-
-// stands for super print cuz fuck you
-void suprint(char * info, bool error = false) {
-	std::cout << info << std::endl;
-	if (error) system("pause");
-}
-
-// bit of console logging so I know the program got here
-void startMessage() {
-	suprint("BEGIN");
-}
-
-// bit of console logging so I know the program got here
-void endMessage() {
-	suprint("FIN!");
-}
+#include <Util.h>
+#include <Shader.h>
 
 // initialize glfw, a c library for easy creation of windows
 void initGlfw() {
@@ -71,9 +32,8 @@ GLFWwindow* createWindow() {
 	GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", nullptr, nullptr);
 	if (window == nullptr)
 	{
-		suprint("Failed to create GLFW window", true);
 		glfwTerminate();
-		exit(-1);
+		suprint("Failed to create GLFW window", true);
 	}
 
 	// make this window's context our current context so changes to our context will be made to this window's context
@@ -95,13 +55,13 @@ void initGlew() {
 	case GLEW_OK:
 		suprint("GLEW INITIALIZED"); break;
 	case GLEW_ERROR_NO_GL_VERSION:
-		suprint("GLEW INIT ERROR: NO GL VERSION (did you start window?)", true); exit(-1);
+		suprint("GLEW INIT ERROR: NO GL VERSION (did you start window?)", true);
 	case GLEW_ERROR_GL_VERSION_10_ONLY:
-		suprint("GLEW INIT ERROR: GLEW_ERROR_GL_VERSION_10_ONLY", true); exit(-1);
+		suprint("GLEW INIT ERROR: GLEW_ERROR_GL_VERSION_10_ONLY", true);
 	case GLEW_ERROR_GLX_VERSION_11_ONLY:
-		suprint("GLEW INIT ERROR: GLEW_ERROR_GLX_VERSION_11_ONLY", true); exit(-1);
+		suprint("GLEW INIT ERROR: GLEW_ERROR_GLX_VERSION_11_ONLY", true);
 	default:
-		suprint("What the fuck... glewInit returned %i??\n", true); exit(-1);
+		suprint("What the fuck... glewInit returned %i??\n", true);
 	}
 }
 
@@ -156,104 +116,13 @@ void updateScreen(GLFWwindow* window, GLuint VAO, GLuint EBO) {
 	glfwSwapBuffers(window);
 }
 
-void verifyShaderCompiled(GLuint shader, bool notifyOnSuccess = false, char* shaderName = NULL) {
-	GLint success;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-	
-	if (!success)
-	{
-		GLchar infoLog[512];
-		glGetShaderInfoLog(shader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-	else if (notifyOnSuccess)
-	{
-		std::cout << "SHADER COMPILED SUCCESSFULLY";
-		if (shaderName != NULL) {
-			printf(": \"%s\"", shaderName);
-		}
-		std::cout << std::endl;
-	}
-}
-
-void verifyProgramLinked(GLuint program, bool notifyOnSuccess = false, char* programName = NULL) {
-	GLint success;
-	glGetProgramiv(program, GL_LINK_STATUS, &success);
-
-	if (!success)
-	{
-		GLchar infoLog[512];
-		glGetShaderInfoLog(program, 512, NULL, infoLog);
-		std::cout << "ERROR::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-	}
-	else if (notifyOnSuccess)
-	{
-		std::cout << "PROGRAM LINKED SUCCESSFULLY";
-		if (programName != NULL) {
-			printf(": \"%s\"", programName);
-		}
-		std::cout << std::endl;
-	}
-}
-
-GLuint createShader(GLuint shaderType, const GLchar * sourceCode) {
-	// create shader
-	GLuint shader;
-	shader = glCreateShader(shaderType);
-
-	// attach the shader source code to the shader and compile it
-	glShaderSource(shader, 1, &sourceCode, NULL);
-	glCompileShader(shader);
-
-	// make sure shader compiled correctly, as IDE will not tell me on its own
-	char * shaderMessage;
-
-	switch (shaderType) {
-	case GL_VERTEX_SHADER:
-		shaderMessage = "vertex shader"; break;
-	case GL_FRAGMENT_SHADER:
-		shaderMessage = "fragment shader"; break;
-	default:
-		shaderMessage = "unknown shader"; break;
-	}
-
-	verifyShaderCompiled(shader, true, "vertex shader");
-	return shader;
-}
-
-GLuint createVertexShader() {
-	return createShader(GL_VERTEX_SHADER, vertexShaderSource);
-}
-
-GLuint createFragmentShader() {
-	return createShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
-}
-
-GLuint createShaderProgram(GLuint vShader, GLuint fShader) {
-	GLuint shaderProgram;
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vShader);
-	glAttachShader(shaderProgram, fShader);
-	glLinkProgram(shaderProgram);
-	verifyProgramLinked(shaderProgram, true, "shader program");
-	return shaderProgram;
-}
-
 // create triangle
 int main() {
-
-	startMessage();
+	suprint("Start!");
 
 	GLFWwindow* window = initWindow(); // create window
 
-	GLuint vertexShader = createVertexShader(); // create vertex shader object
-	GLuint fragmentShader = createFragmentShader(); // create fragment shader object
-	
-	GLuint shaderProgram = createShaderProgram(vertexShader, fragmentShader); // create full shader program using those two shader objects
-	
-	//no longer need shader objects, I assume we delete them because they are on limited vram
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	Shader shader = Shader("C:/repo/first-game/src/shader/shader.vs", "C:/repo/first-game/src/shader/shader.fs");
 
 	GLuint VAO;
 	glGenVertexArrays(1, &VAO);
@@ -304,7 +173,7 @@ int main() {
 	glBindVertexArray(0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	glUseProgram(shaderProgram);
+	shader.Use();
 
 	// run program until close
 	while (!glfwWindowShouldClose(window))
@@ -318,5 +187,6 @@ int main() {
 	glDeleteBuffers(1, &EBO);
 	glfwTerminate();
 
-	endMessage(); return 0;
+	suprint("End.");
+	return 0;
 }

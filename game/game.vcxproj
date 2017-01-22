@@ -25,6 +25,8 @@
     <ClInclude Include="..\include\GL\glew.h" />
     <ClInclude Include="..\include\GL\glxew.h" />
     <ClInclude Include="..\include\GL\wglew.h" />
+    <ClInclude Include="..\src\header\Shader.h" />
+    <ClInclude Include="..\src\header\Util.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\lib\glew32.lib" />
@@ -35,6 +37,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\resources\glew32.dll" />
+    <None Include="..\src\shader\shader.fs" />
+    <None Include="..\src\shader\shader.vs" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\resources\Instructions to setup.txt" />
@@ -94,8 +98,8 @@
     <LibraryPath>C:\Users\Serguei\Downloads\glfw-3.2.1\build\src\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)include;C:\Users\Serguei\Documents\Visual Studio 2015\Projects\game\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib;C:\Users\Serguei\Documents\Visual Studio 2015\Projects\game\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -114,6 +118,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\repo\first-game\src\header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
