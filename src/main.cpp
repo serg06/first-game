@@ -239,61 +239,6 @@ GLuint createShaderProgram(GLuint vShader, GLuint fShader) {
 	return shaderProgram;
 }
 
-/* // init data, no longer doing it like this tho
-
-void createTrianglesVBO(GLuint * VBO) {
-	// create our [2d in 3d] triangle vertices
-	GLfloat trianglev[] = {
-		-0.5f, -0.5f, 0.0f, // bottom left corner
-		0.5f,  -0.5f, 0.0f, // bottom right coner
-		0.0f,   0.5f, 0.0f  // middle top corner
-	};
-
-	// create a buffer object for our triangle vertices
-	glGenBuffers(1, VBO);
-
-	// bind it to the array buffer
-	glBindBuffer(GL_ARRAY_BUFFER, *VBO);
-
-	// write the triangle vertices to [the array buffer which is bound to] our VBO
-	glBufferData(GL_ARRAY_BUFFER, sizeof(trianglev), trianglev, GL_STATIC_DRAW);
-}
-
-GLuint createTriangleVAO(GLuint * VBO) {
-	// Create Vertex Array Object (data neded to draw an object)
-	GLuint VAO;
-	glGenVertexArrays(1, &VAO);
-
-	// Bind our vertex array object so that future VBO, EBO, glVertexAttribPointer or glEnableVertexAttribArray calls are stored inside of it.
-	glBindVertexArray(VAO);
-
-	createTrianglesVBO(VBO);
-
-	// set the attributes for our bound VAO's 0th attribute
-	glVertexAttribPointer(
-		0, // our vertex shader has location=0, which I don't quite understand
-		3, // size of our vertex attribute, which is a vec3 (does this mean 3D or 3 vertices?)
-		GL_FLOAT, // type of vertex data
-		GL_FALSE, // bool normalized: whether to map values out of 0-1 range to 0-1
-		3 * sizeof(GLfloat), // the space between sets of vertex attributes. Let's say we had xyzcrap and we only needed to pass xyz, we'd do 7*float or w/e. 
-							 // can also be set to 0 to let openGL auto-determine it (which it can if shit is tightly-packed (a.k.a. xyzxyzxyzxy..)
-		(GLvoid*)0 // offset of where position data begins in buffer
-	);
-
-	// enable 0th vertex attribute (ok...)
-	glEnableVertexAttribArray(0);
-
-	// unbind the VBO
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// unbind the VAO
-	glBindVertexArray(0);
-
-	return VAO;
-}
-*/
-
-
 // create triangle
 int main() {
 
