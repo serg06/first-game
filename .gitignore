@@ -11,16 +11,24 @@
 *.userprefs
 
 # Build results
-[Dd]ebug/
+[Dd]ebug/*
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
-[Xx]64/
+[Xx]64/*
 [Xx]86/
 [Bb]uild/
 bld/
 [Bb]in/
 [Oo]bj/
+
+# but not glew32.dll
+!x64/Debug
+# but yes game.exe
+x64/Debug/game.exe
+
+# but yes game/
+game/*
 
 # Visual Studio 2015 cache/options directory
 .vs/

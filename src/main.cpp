@@ -36,8 +36,9 @@ void main()\n\
 }";
 
 // stands for super print cuz fuck you
-void suprint(char * info, int secs = 0) {
-	std::cout << info << std::endl; Sleep(secs * 1000);
+void suprint(char * info, bool error = false) {
+	std::cout << info << std::endl;
+	if (error) system("pause");
 }
 
 // bit of console logging so I know the program got here
@@ -70,7 +71,7 @@ GLFWwindow* createWindow() {
 	GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", nullptr, nullptr);
 	if (window == nullptr)
 	{
-		suprint("Failed to create GLFW window", 5*sec);
+		suprint("Failed to create GLFW window", true);
 		glfwTerminate();
 		exit(-1);
 	}
@@ -94,13 +95,13 @@ void initGlew() {
 	case GLEW_OK:
 		suprint("GLEW INITIALIZED"); break;
 	case GLEW_ERROR_NO_GL_VERSION:
-		suprint("GLEW INIT ERROR: NO GL VERSION (did you start window?)", 5); exit(-1);
+		suprint("GLEW INIT ERROR: NO GL VERSION (did you start window?)", true); exit(-1);
 	case GLEW_ERROR_GL_VERSION_10_ONLY:
-		suprint("GLEW INIT ERROR: GLEW_ERROR_GL_VERSION_10_ONLY", 5); exit(-1);
+		suprint("GLEW INIT ERROR: GLEW_ERROR_GL_VERSION_10_ONLY", true); exit(-1);
 	case GLEW_ERROR_GLX_VERSION_11_ONLY:
-		suprint("GLEW INIT ERROR: GLEW_ERROR_GLX_VERSION_11_ONLY", 5); exit(-1);
+		suprint("GLEW INIT ERROR: GLEW_ERROR_GLX_VERSION_11_ONLY", true); exit(-1);
 	default:
-		printf("What the fuck... glewInit returned %i??\n", a); Sleep(5*sec); exit(-1);
+		suprint("What the fuck... glewInit returned %i??\n", true); exit(-1);
 	}
 }
 
