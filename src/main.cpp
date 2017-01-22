@@ -98,24 +98,6 @@ GLFWwindow* initWindow() {
 	return window;
 }
 
-// update window viewable area with newest info
-void updateScreen(GLFWwindow* window, GLuint VAO, GLuint EBO) {
-	// check for events (like keys pressed!) and call callbacks appropriately
-	glfwPollEvents();
-
-	// set color to place when color buffer is cleared & clears it
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	// draw our triangle
-	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-
-	// put the rendered buffer on the screen, take the old buffer back to render the next frame
-	glfwSwapBuffers(window);
-}
-
 // create triangle
 int main() {
 	suprint("Start!");
@@ -173,12 +155,28 @@ int main() {
 	glBindVertexArray(0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+	GLfloat timeValue, greenValue;
+	GLint vertexColorLocation = glGetUniformLocation(shader.Program, "ourColor");
 	shader.Use();
 
 	// run program until close
 	while (!glfwWindowShouldClose(window))
 	{
-		updateScreen(window, VAO, EBO);
+		// check for events (like keys pressed!) and call callbacks appropriately
+		glfwPollEvents();
+
+		// set new color
+		timeValue = glfwGetTime();
+		greenValue = (sin(timeValue) / 2) + 0.5;
+		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
+		// draw our triangle
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+
+		// put the rendered buffer on the screen, take the old buffer back to render the next frame
+		glfwSwapBuffers(window);
 	}
 	
 	// clean resources
