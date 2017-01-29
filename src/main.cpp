@@ -104,41 +104,31 @@ int main() {
 	GLFWwindow* window = initWindow();
 	Shader shader = Shader("C:/repo/first-game/src/shader/shader.vs", "C:/repo/first-game/src/shader/shader.fs");
 
-	// Record VBO/etc calls
+	// Triangle data
+	GLfloat vertices[] = {
+		// positions	    // colors
+		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left corner
+		0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right corner
+		0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f  // top corner
+	};
+
+	// Bind VAO to record VBO/etc calls
 	GLuint VAO;
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
-
-	// Triangle vertices
-	GLfloat trianglesv[] = {
-		// positions	    // colors
-		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left corner
-		 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right corner
-		 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f  // top corner
-	};
 
 	// Write triangles to buffer
 	GLuint VBO;
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(trianglesv), trianglesv, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	// set the attributes for our bound VAO's 0th attribute - position!
-	glVertexAttribPointer(
-		0, // 0th attribute 
-		3, // size of our vertex attribute (vec3 => 3)
-		GL_FLOAT, GL_FALSE,
-		6 * sizeof(GLfloat), // the space between sets of vertex attributes
-		(GLvoid*)0
-	);
-	
-	// set color -- aww yeeee
-	glVertexAttribPointer(
-		1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat))
-	);
-
-	// enable attributes
+	// set up position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
+
+	// set up color attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(1);
 
 	// unbind stuff from buffers
