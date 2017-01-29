@@ -99,66 +99,50 @@ GLFWwindow* initWindow() {
 }
 
 int main() {
+	// Set shit up
 	suprint("Start!");
-
-	GLFWwindow* window = initWindow(); // create window
-
+	GLFWwindow* window = initWindow();
 	Shader shader = Shader("C:/repo/first-game/src/shader/shader.vs", "C:/repo/first-game/src/shader/shader.fs");
 
+	// Record VBO/etc calls
 	GLuint VAO;
 	glGenVertexArrays(1, &VAO);
-
-	// Bind our vertex array object so that future VBO, EBO, glVertexAttribPointer or glEnableVertexAttribArray calls are stored inside of it.
 	glBindVertexArray(VAO);
 
-	// create vertices for our square made out of two triangles, and store it in a VBO
+	// Triangle vertices
 	GLfloat trianglesv[] = {
 		-0.5f, -0.5f, 0.0f, // bottom left corner
 		 0.5f, -0.5f, 0.0f, // bottom right corner
-		-0.5f,  0.5f, 0.0f, // top left corner
-		 0.5f,  0.5f, 0.0f  // top right corner
+		 0.0f,  0.5f, 0.0f, // top corner
 	};
 
+	// Write triangles to buffer
 	GLuint VBO;
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(trianglesv), trianglesv, GL_STATIC_DRAW);
 
-	// create indices for VBO for our triangles and store in EBO
-	GLuint trianglesi[] = {
-		0, 1, 2,
-		1, 2, 3
-	};
-
-	GLuint EBO;
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(trianglesi), trianglesi, GL_STATIC_DRAW);
-
-	// set the attributes for our bound VAO's 0th attribute - location!
+	// set the attributes for our bound VAO's 0th attribute - position!
 	glVertexAttribPointer(
 		0, // 0th attribute 
-		3, // size of our vertex attribute, which is a vec3 (does this mean 3D or 3 vertices?)
-		GL_FLOAT, // type of vertex data
-		GL_FALSE, // bool normalized: whether to map values out of 0-1 range to 0-1
-		3 * sizeof(GLfloat), // the space between sets of vertex attributes. Let's say we had xyzcrap and we only needed to pass xyz, we'd do 7*float or w/e. 
-							 // can also be set to 0 to let openGL auto-determine it (which it can if shit is tightly-packed (a.k.a. xyzxyzxyzxy..)
-		(GLvoid*)0 // offset of where position data begins in buffer
+		3, // size of our vertex attribute (vec3 => 3)
+		GL_FLOAT, GL_FALSE,
+		3 * sizeof(GLfloat), // the space between sets of vertex attributes
+		(GLvoid*)0
 	);
 
-	// enable 0th attribute, a.k.a. location vertex
+	// enable 0th attribute
 	glEnableVertexAttribArray(0);
 
-	// unbind various objects from buffers (NOTE: must unbind EBO AFTER VAO, else it will unbind from the VAO)
+	// unbind stuff from buffers
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	GLfloat timeValue, greenValue;
 	GLint vertexColorLocation = glGetUniformLocation(shader.Program, "ourColor");
 	shader.Use();
 
-	// run program until close
+	// run program
 	while (!glfwWindowShouldClose(window))
 	{
 		// check for events (like keys pressed!) and call callbacks appropriately
@@ -171,7 +155,7 @@ int main() {
 
 		// draw our triangle
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glBindVertexArray(0);
 
 		// put the rendered buffer on the screen, take the old buffer back to render the next frame
@@ -181,7 +165,6 @@ int main() {
 	// clean resources
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
 	glfwTerminate();
 
 	suprint("End.");
