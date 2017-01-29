@@ -111,9 +111,10 @@ int main() {
 
 	// Triangle vertices
 	GLfloat trianglesv[] = {
-		-0.5f, -0.5f, 0.0f, // bottom left corner
-		 0.5f, -0.5f, 0.0f, // bottom right corner
-		 0.0f,  0.5f, 0.0f, // top corner
+		// positions	    // colors
+		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left corner
+		 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right corner
+		 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f  // top corner
 	};
 
 	// Write triangles to buffer
@@ -127,19 +128,24 @@ int main() {
 		0, // 0th attribute 
 		3, // size of our vertex attribute (vec3 => 3)
 		GL_FLOAT, GL_FALSE,
-		3 * sizeof(GLfloat), // the space between sets of vertex attributes
+		6 * sizeof(GLfloat), // the space between sets of vertex attributes
 		(GLvoid*)0
 	);
+	
+	// set color -- aww yeeee
+	glVertexAttribPointer(
+		1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat))
+	);
 
-	// enable 0th attribute
+	// enable attributes
 	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
 
 	// unbind stuff from buffers
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	GLfloat timeValue, greenValue;
-	GLint vertexColorLocation = glGetUniformLocation(shader.Program, "ourColor");
+	// select shader
 	shader.Use();
 
 	// run program
@@ -147,11 +153,6 @@ int main() {
 	{
 		// check for events (like keys pressed!) and call callbacks appropriately
 		glfwPollEvents();
-
-		// set new color
-		timeValue = glfwGetTime();
-		greenValue = (sin(timeValue) / 2) + 0.5;
-		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
 		// draw our triangle
 		glBindVertexArray(VAO);
