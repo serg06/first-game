@@ -4,56 +4,13 @@
 #include <windows.h>
 #include <cstdlib>
 
-#define sec 1000
+// #define GLEW_STATIC // This breaks stuff...
 
-
-// ON TO THE FUN
-
-// #define GLEW_STATIC // THIS BREAKS STUFF HARDCORE ?? !!
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-// our vertex shader code to be compiled at runtime
-const GLchar * vertexShaderSource = "\
-#version 330 core\n\
-\n\
-layout(location = 0) in vec3 position;\n\
-\n\
-out vec4 vertexColor; // color to send to fragment shader \n\
-\n\
-void main()\n\
-{\n\
-	gl_Position = vec4(position, 1.0);\n\
-	vertexColor = vec4(0.5f, 0.0f, 0.0f, 1.0f); // dark red \n\
-}\0";
-
-// our fragment shader source code!
-const GLchar * fragmentShaderSource = "\n\
-#version 330 core\n\
-\n\
-in vec4 vertexColor;\n\
-\n\
-out vec4 color;\n\
-\n\
-void main()\n\
-{\n\
-	color = vertexColor;\n\
-}";
-
-// stands for super print cuz fuck you
-void suprint(char * info, int secs = 0) {
-	std::cout << info << std::endl; Sleep(secs * 1000);
-}
-
-// bit of console logging so I know the program got here
-void startMessage() {
-	suprint("BEGIN");
-}
-
-// bit of console logging so I know the program got here
-void endMessage() {
-	suprint("FIN!");
-}
+#include <Util.h>
+#include <Shader.h>
 
 // initialize glfw, a c library for easy creation of windows
 void initGlfw() {
@@ -75,9 +32,8 @@ GLFWwindow* createWindow() {
 	GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", nullptr, nullptr);
 	if (window == nullptr)
 	{
-		suprint("Failed to create GLFW window", 5*sec);
 		glfwTerminate();
-		exit(-1);
+		suprint("Failed to create GLFW window", true);
 	}
 
 	// make this window's context our current context so changes to our context will be made to this window's context
@@ -99,13 +55,13 @@ void initGlew() {
 	case GLEW_OK:
 		suprint("GLEW INITIALIZED"); break;
 	case GLEW_ERROR_NO_GL_VERSION:
-		suprint("GLEW INIT ERROR: NO GL VERSION (did you start window?)", 5); exit(-1);
+		suprint("GLEW INIT ERROR: NO GL VERSION (did you start window?)", true);
 	case GLEW_ERROR_GL_VERSION_10_ONLY:
-		suprint("GLEW INIT ERROR: GLEW_ERROR_GL_VERSION_10_ONLY", 5); exit(-1);
+		suprint("GLEW INIT ERROR: GLEW_ERROR_GL_VERSION_10_ONLY", true);
 	case GLEW_ERROR_GLX_VERSION_11_ONLY:
-		suprint("GLEW INIT ERROR: GLEW_ERROR_GLX_VERSION_11_ONLY", 5); exit(-1);
+		suprint("GLEW INIT ERROR: GLEW_ERROR_GLX_VERSION_11_ONLY", true);
 	default:
-		printf("What the fuck... glewInit returned %i??\n", a); Sleep(5*sec); exit(-1);
+		suprint("What the fuck... glewInit returned %i??\n", true);
 	}
 }
 
@@ -142,176 +98,12 @@ GLFWwindow* initWindow() {
 	return window;
 }
 
-// update window viewable area with newest info
-void updateScreen(GLFWwindow* window, GLuint VAO, GLuint EBO) {
-	// check for events (like keys pressed!) and call callbacks appropriately
-	glfwPollEvents();
-
-	// set color to place when color buffer is cleared & clears it
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	// draw our triangle
-	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-
-	// put the rendered buffer on the screen, take the old buffer back to render the next frame
-	glfwSwapBuffers(window);
-}
-
-void verifyShaderCompiled(GLuint shader, bool notifyOnSuccess = false, char* shaderName = NULL) {
-	GLint success;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-	
-	if (!success)
-	{
-		GLchar infoLog[512];
-		glGetShaderInfoLog(shader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-	else if (notifyOnSuccess)
-	{
-		std::cout << "SHADER COMPILED SUCCESSFULLY";
-		if (shaderName != NULL) {
-			printf(": \"%s\"", shaderName);
-		}
-		std::cout << std::endl;
-	}
-}
-
-void verifyProgramLinked(GLuint program, bool notifyOnSuccess = false, char* programName = NULL) {
-	GLint success;
-	glGetProgramiv(program, GL_LINK_STATUS, &success);
-
-	if (!success)
-	{
-		GLchar infoLog[512];
-		glGetShaderInfoLog(program, 512, NULL, infoLog);
-		std::cout << "ERROR::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-	}
-	else if (notifyOnSuccess)
-	{
-		std::cout << "PROGRAM LINKED SUCCESSFULLY";
-		if (programName != NULL) {
-			printf(": \"%s\"", programName);
-		}
-		std::cout << std::endl;
-	}
-}
-
-GLuint createShader(GLuint shaderType, const GLchar * sourceCode) {
-	// create shader
-	GLuint shader;
-	shader = glCreateShader(shaderType);
-
-	// attach the shader source code to the shader and compile it
-	glShaderSource(shader, 1, &sourceCode, NULL);
-	glCompileShader(shader);
-
-	// make sure shader compiled correctly, as IDE will not tell me on its own
-	char * shaderMessage;
-
-	switch (shaderType) {
-	case GL_VERTEX_SHADER:
-		shaderMessage = "vertex shader"; break;
-	case GL_FRAGMENT_SHADER:
-		shaderMessage = "fragment shader"; break;
-	default:
-		shaderMessage = "unknown shader"; break;
-	}
-
-	verifyShaderCompiled(shader, true, "vertex shader");
-	return shader;
-}
-
-GLuint createVertexShader() {
-	return createShader(GL_VERTEX_SHADER, vertexShaderSource);
-}
-
-GLuint createFragmentShader() {
-	return createShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
-}
-
-GLuint createShaderProgram(GLuint vShader, GLuint fShader) {
-	GLuint shaderProgram;
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vShader);
-	glAttachShader(shaderProgram, fShader);
-	glLinkProgram(shaderProgram);
-	verifyProgramLinked(shaderProgram, true, "shader program");
-	return shaderProgram;
-}
-
-/* // init data, no longer doing it like this tho
-
-void createTrianglesVBO(GLuint * VBO) {
-	// create our [2d in 3d] triangle vertices
-	GLfloat trianglev[] = {
-		-0.5f, -0.5f, 0.0f, // bottom left corner
-		0.5f,  -0.5f, 0.0f, // bottom right coner
-		0.0f,   0.5f, 0.0f  // middle top corner
-	};
-
-	// create a buffer object for our triangle vertices
-	glGenBuffers(1, VBO);
-
-	// bind it to the array buffer
-	glBindBuffer(GL_ARRAY_BUFFER, *VBO);
-
-	// write the triangle vertices to [the array buffer which is bound to] our VBO
-	glBufferData(GL_ARRAY_BUFFER, sizeof(trianglev), trianglev, GL_STATIC_DRAW);
-}
-
-GLuint createTriangleVAO(GLuint * VBO) {
-	// Create Vertex Array Object (data neded to draw an object)
-	GLuint VAO;
-	glGenVertexArrays(1, &VAO);
-
-	// Bind our vertex array object so that future VBO, EBO, glVertexAttribPointer or glEnableVertexAttribArray calls are stored inside of it.
-	glBindVertexArray(VAO);
-
-	createTrianglesVBO(VBO);
-
-	// set the attributes for our bound VAO's 0th attribute
-	glVertexAttribPointer(
-		0, // our vertex shader has location=0, which I don't quite understand
-		3, // size of our vertex attribute, which is a vec3 (does this mean 3D or 3 vertices?)
-		GL_FLOAT, // type of vertex data
-		GL_FALSE, // bool normalized: whether to map values out of 0-1 range to 0-1
-		3 * sizeof(GLfloat), // the space between sets of vertex attributes. Let's say we had xyzcrap and we only needed to pass xyz, we'd do 7*float or w/e. 
-							 // can also be set to 0 to let openGL auto-determine it (which it can if shit is tightly-packed (a.k.a. xyzxyzxyzxy..)
-		(GLvoid*)0 // offset of where position data begins in buffer
-	);
-
-	// enable 0th vertex attribute (ok...)
-	glEnableVertexAttribArray(0);
-
-	// unbind the VBO
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// unbind the VAO
-	glBindVertexArray(0);
-
-	return VAO;
-}
-*/
-
-
 int main() {
-
-	startMessage();
+	suprint("Start!");
 
 	GLFWwindow* window = initWindow(); // create window
 
-	GLuint vertexShader = createVertexShader(); // create vertex shader object
-	GLuint fragmentShader = createFragmentShader(); // create fragment shader object
-	
-	GLuint shaderProgram = createShaderProgram(vertexShader, fragmentShader); // create full shader program using those two shader objects
-	
-	//no longer need shader objects, I assume we delete them because they are on limited vram
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	Shader shader = Shader("C:/repo/first-game/src/shader/shader.vs", "C:/repo/first-game/src/shader/shader.fs");
 
 	GLuint VAO;
 	glGenVertexArrays(1, &VAO);
@@ -362,12 +154,28 @@ int main() {
 	glBindVertexArray(0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	glUseProgram(shaderProgram);
+	GLfloat timeValue, greenValue;
+	GLint vertexColorLocation = glGetUniformLocation(shader.Program, "ourColor");
+	shader.Use();
 
 	// run program until close
 	while (!glfwWindowShouldClose(window))
 	{
-		updateScreen(window, VAO, EBO);
+		// check for events (like keys pressed!) and call callbacks appropriately
+		glfwPollEvents();
+
+		// set new color
+		timeValue = glfwGetTime();
+		greenValue = (sin(timeValue) / 2) + 0.5;
+		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
+		// draw our triangle
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+
+		// put the rendered buffer on the screen, take the old buffer back to render the next frame
+		glfwSwapBuffers(window);
 	}
 	
 	// clean resources
@@ -376,5 +184,6 @@ int main() {
 	glDeleteBuffers(1, &EBO);
 	glfwTerminate();
 
-	endMessage(); return 0;
+	suprint("End.");
+	return 0;
 }
