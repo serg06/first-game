@@ -25,12 +25,14 @@
     <ClInclude Include="..\include\GL\glew.h" />
     <ClInclude Include="..\include\GL\glxew.h" />
     <ClInclude Include="..\include\GL\wglew.h" />
+    <ClInclude Include="..\include\SOIL\SOIL.h" />
     <ClInclude Include="..\src\header\Shader.h" />
     <ClInclude Include="..\src\header\Util.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\lib\glew32.lib" />
     <Library Include="..\lib\glfw3.lib" />
+    <Library Include="..\lib\SOIL.lib" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp" />
@@ -119,9 +121,10 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\repo\first-game\src\header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;glew32.lib;SOIL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

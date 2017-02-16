@@ -8,6 +8,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <SOIL/SOIL.h>
 
 #include <Util.h>
 #include <Shader.h>
@@ -104,18 +105,36 @@ int main() {
 	GLFWwindow* window = initWindow();
 	Shader shader = Shader("C:/repo/first-game/src/shader/shader.vs", "C:/repo/first-game/src/shader/shader.fs");
 
-	// Triangle data
+	// Vertices for our texture
 	GLfloat vertices[] = {
-		// positions	    // colors
-		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left corner
-		0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right corner
-		0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f  // top corner
+		// Positions          // Colors           // Texture Coords
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // Top Right
+		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // Bottom Right
+		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // Bottom Left
+		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // Top Left 
 	};
 
 	// Bind VAO to record VBO/etc calls
 	GLuint VAO;
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
+
+	// Bind crate texture
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	// Load crate image
+	int width, height;
+	unsigned char* image = SOIL_load_image("C:/repo/first-game/src/img/container.jpg", &width, &height, 0, SOIL_LOAD_RGB);
+
+	// load image into texture
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	// clear trash
+	SOIL_free_image_data(image);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	// Write triangles to buffer
 	GLuint VBO;

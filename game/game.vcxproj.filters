@@ -26,6 +26,9 @@
     <Filter Include="Source Files\shader">
       <UniqueIdentifier>{9283e78a-a761-4a1c-a0d9-1aca3cdfecd8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\SOIL">
+      <UniqueIdentifier>{e0e9a342-315d-46e1-9263-637b77727be2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\GL\eglew.h">
@@ -52,12 +55,18 @@
     <ClInclude Include="..\src\header\Util.h">
       <Filter>Source Files\header</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\SOIL\SOIL.h">
+      <Filter>include\SOIL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\lib\glfw3.lib">
       <Filter>lib</Filter>
     </Library>
     <Library Include="..\lib\glew32.lib">
+      <Filter>lib</Filter>
+    </Library>
+    <Library Include="..\lib\SOIL.lib">
       <Filter>lib</Filter>
     </Library>
   </ItemGroup>
